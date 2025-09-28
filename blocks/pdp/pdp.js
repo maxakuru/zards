@@ -1,7 +1,6 @@
 import { loadScript, toClassName, getMetadata } from '../../scripts/aem.js';
 import renderAddToCart from './add-to-cart.js';
 import renderGallery from './gallery.js';
-import renderSpecs from './specification-tabs.js';
 import renderPricing, { extractPricing } from './pricing.js';
 // eslint-disable-next-line import/no-cycle
 import { renderOptions, onOptionChange } from './options.js';
@@ -49,18 +48,6 @@ function renderDetails(block) {
   h2.textContent = 'About';
   detailsContainer.prepend(h2);
   return detailsContainer;
-}
-
-function renderFAQ() {
-  const faqContainer = document.createElement('div');
-  faqContainer.classList.add('faq-container');
-  faqContainer.innerHTML = `
-  <h4>Have a question?</h4>
-  <ul>
-    <li><a href="/faqs">Frequently Asked Questions</a></li>
-    <li><a href="/contact">Contact Us</a></li>
-  </ul>`;
-  return faqContainer;
 }
 
 function renderContent(detailsContainer) {
@@ -182,113 +169,9 @@ function renderShare() {
     <a rel="noopener noreferrer nofollow" href="https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${url}"><img src="/icons/facebook.svg" alt="Facebook" /></a>
     <a rel="noopener noreferrer nofollow" href="https://www.twitter.com/share?url=${url}"><img src="/icons/x.svg" alt="X" /></a>
     <a rel="noopener noreferrer nofollow" href="https://www.pinterest.com/pin/create/button/?url=${url}"><img src="/icons/pinterest.svg" alt="Pinterest" /></a>
-    <a rel="noopener noreferrer nofollow" class="pdp-share-email" href="mailto:?subject=Check this out&body=${url}"><img src="/icons/email.svg" alt="Email" /></a>
+    <a rel="noopener noreferrer nofollow" class="pdp-share-email" href="mailto:hi@zards.cards?subject=Check this out&body=${url}"><img src="/icons/email.svg" alt="Email" /></a>
   `;
   return shareContainer;
-}
-
-async function renderFreeGift(offers) {
-  try {
-    const fetchGifts = async () => {
-      const resp = await fetch('/us/en_us/products/config/free-gifts.plain.html');
-      if (!resp.ok) return null;
-      const text = await resp.text();
-      const doc = new DOMParser().parseFromString(text, 'text/html');
-      const gifts = doc.querySelector('.free-gifts');
-      return [...gifts.children].map((gift) => {
-        const [dates, minPrice, label, body] = gift.children;
-        const datesText = dates.textContent;
-        const minPriceText = minPrice.textContent.startsWith('$') ? minPrice.textContent.slice(1) : minPrice.textContent;
-        const labelText = label.textContent;
-        const bodyText = body.innerHTML.replaceAll('./media_', './config/media_');
-        return {
-          dates: datesText,
-          minPrice: minPriceText,
-          label: labelText,
-          body: bodyText,
-        };
-      });
-    };
-
-    const gifts = await fetchGifts();
-    const parseDateRange = (dates) => {
-      const [startDateStr, endDateStr] = dates.split(' - ');
-
-      // Helper function to parse individual date strings with time and timezone
-      const parseDateWithTime = (dateStr) => {
-        // Handle formats like "9/12/2025 9am EDT" or "9/19/2025 3pm EDT"
-        const timeMatch = dateStr.match(/^(\d{1,2}\/\d{1,2}\/\d{4})\s+(\d{1,2})(am|pm)\s+([A-Z]{3,4})$/);
-
-        if (timeMatch) {
-          const [, datePart, hour, ampm, timezone] = timeMatch;
-
-          // Parse the date part (M/D/YYYY)
-          const [month, day, year] = datePart.split('/').map((num) => parseInt(num, 10));
-
-          // Convert hour to 24-hour format
-          let hour24 = parseInt(hour, 10);
-          if (ampm.toLowerCase() === 'pm' && hour24 !== 12) {
-            hour24 += 12;
-          } else if (ampm.toLowerCase() === 'am' && hour24 === 12) {
-            hour24 = 0;
-          }
-
-          // Handle timezone offset (simplified - you might want to use a proper timezone library)
-          // For now, we'll assume EDT is UTC-4 (Eastern Daylight Time)
-          const timezoneOffsets = {
-            EDT: -4, // UTC-4 hours
-            EST: -5, // UTC-5 hours
-            CDT: -5, // UTC-5 hours
-            CST: -6, // UTC-6 hours
-            MDT: -6, // UTC-6 hours
-            MST: -7, // UTC-7 hours
-            PDT: -7, // UTC-7 hours
-            PST: -8, // UTC-8 hours
-          };
-
-          const offsetHours = timezoneOffsets[timezone] || 0;
-
-          // Convert the local time to UTC by adding the offset
-          // If EDT is UTC-4, then 9am EDT = 1pm UTC (9 + 4 = 13)
-          const utcHour = hour24 - offsetHours;
-
-          // Create UTC date object directly
-          const utcDate = new Date(Date.UTC(year, month - 1, day, utcHour, 0, 0));
-
-          return utcDate;
-        }
-
-        // Fallback to simple date parsing for formats without time/timezone
-        return new Date(dateStr);
-      };
-
-      return [parseDateWithTime(startDateStr), parseDateWithTime(endDateStr)];
-    };
-
-    const findGift = (giftList, price) => giftList.find((gift) => {
-      const [startDate, endDate] = parseDateRange(gift.dates);
-      const today = new Date();
-      return today >= startDate && today <= endDate
-        && price >= +gift.minPrice;
-    });
-    const gift = findGift(gifts, +offers[0].price);
-    if (gift) {
-      const freeGiftContainer = document.createElement('div');
-      freeGiftContainer.classList.add('pdp-free-gift-container');
-      freeGiftContainer.innerHTML = `
-        <div class="pdp-free-gift-heading"><span>${gift.label}</span></div>
-        <div class="pdp-free-gift-body">
-          ${gift.body}
-        </div>
-      `;
-      return freeGiftContainer;
-    }
-    return null;
-  } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error('Error fetching free gifts:', error);
-    return null;
-  }
 }
 
 /**
@@ -311,13 +194,12 @@ export default async function decorate(block) {
   const pricingContainer = renderPricing(block);
   const optionsContainer = renderOptions(block, variants, custom);
   const addToCartContainer = renderAddToCart(block, jsonLdData);
-  const freeGiftContainer = await renderFreeGift(offers);
   const freeShippingContainer = renderFreeShipping(offers);
   const shareContainer = renderShare();
   buyBox.append(
     pricingContainer,
     optionsContainer || '',
-    freeGiftContainer || '',
+    '', // free gift container
     addToCartContainer,
     '',
     freeShippingContainer || '',
@@ -325,12 +207,7 @@ export default async function decorate(block) {
   );
 
   const detailsContainer = renderDetails(block);
-  const specifications = detailsContainer.querySelector('.specifications');
-  const specsContainer = renderSpecs(specifications, custom, jsonLdData.name);
-  specifications.remove();
-
   const contentContainer = renderContent(detailsContainer);
-  const faqContainer = renderFAQ(block);
 
   /* remove buttons styling from details */
   detailsContainer.querySelectorAll('.button').forEach((button) => {
@@ -345,8 +222,8 @@ export default async function decorate(block) {
     buyBox,
     contentContainer,
     detailsContainer,
-    specsContainer,
-    faqContainer,
+    '',
+    '',
     relatedProductsContainer || '',
   );
 

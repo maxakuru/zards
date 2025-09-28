@@ -1,0 +1,300 @@
+body.modal-open {
+  overflow: hidden;
+}
+
+.modal dialog::backdrop {
+  background-color: rgb(19 19 19 / 75%);
+}
+
+.modal dialog {
+  overscroll-behavior: none;
+  overflow-y: hidden;
+  width: calc(100vw - 48px);
+  max-width: 900px;
+  max-height: calc(100dvh - (2 * var(--header-height)));
+  padding: 0;
+  border: 1px solid var(--dark-color);
+  background-color: transparent;
+}
+
+.modal dialog .modal-content {
+  box-sizing: border-box;
+  overflow-y: auto;
+  overscroll-behavior: none;
+  width: 100%;
+  max-height: calc(100dvh - (2 * var(--header-height)) - 48px);
+  padding: 24px;
+  padding-top: 0;
+  margin-top: 44px;
+}
+
+@media (width >= 900px) {
+  .modal dialog {
+    width: calc(100vw - 64px);
+  }
+  
+  .modal dialog .modal-content {
+    max-height: calc(100dvh - (2 * var(--header-height)) - 64px);
+    padding: 0;
+  }
+}
+
+.modal .close-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 44px;
+  height: 44px;
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  background-color: transparent;
+  color: var(--color-white);
+  line-height: 0;
+  box-shadow: none;
+  cursor: pointer;
+}
+
+.modal .close-button .icon.icon-close {
+  content: '';
+  width: 24px;
+  height: 24px;
+}
+
+.modal .close-button .icon.icon-close::before,
+.modal .close-button .icon.icon-close::after {
+  content: '';
+  box-sizing: border-box;
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(45deg);
+  width: 24px;
+  height: 2px;
+  border-radius: 2px;
+  background-color: currentcolor;
+}
+
+.modal .close-button .icon.icon-close::after {
+  transform: translate(-50%, -50%) rotate(-45deg)
+}
+
+.modal dialog .section {
+  padding: 0;
+}
+
+/* sign-up modal */
+.modal[data-modal-path$="sign-up"] dialog {
+  max-width: 1000px;
+  max-height: 750px;
+  height: 90dvh;
+  width: 90dvw;
+}
+
+.modal[data-modal-path$="sign-up"] dialog .modal-content {
+  background-color: var(--color-gray-300);
+  display: flex;
+  height: 100%;
+  max-height: calc(90dvh - 64px);
+}
+
+.modal[data-modal-path$="sign-up"] dialog .modal-content .section:nth-child(1) {
+  display: none;
+  line-height: 0;
+  flex: 1;
+  position: relative;
+}
+
+.modal[data-modal-path$="sign-up"] dialog .modal-content .section:nth-child(1) picture {
+  display: block;
+  position: absolute;
+  inset: 0;
+}
+
+.modal[data-modal-path$="sign-up"] dialog .modal-content .section:nth-child(1) picture img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+@media (width >= 900px) {
+  .modal[data-modal-path$="sign-up"] dialog .modal-content .section:nth-child(1) {
+    display: block;
+  }
+}
+
+.modal[data-modal-path$="sign-up"] dialog .modal-content .section:nth-child(2) {
+  padding: var(--spacing-100) 0;
+  flex: 1;
+}
+
+@media (width >= 900px) {
+  .modal[data-modal-path$="sign-up"] dialog .modal-content .section:nth-child(2) {
+    padding: var(--spacing-400);
+  }
+}
+
+.modal[data-modal-path$="sign-up"] dialog .modal-content .section:nth-child(2) p:first-of-type {
+  font-family: var(--heading-font-family);
+  font-size: var(--heading-size-xl);
+  line-height: 1;
+}
+
+.modal[data-modal-path$="sign-up"] dialog .modal-content .section:nth-child(2) p:first-of-type strong {
+  font-weight: 500;
+}
+
+.modal[data-modal-path$="sign-up"] dialog .modal-content .section:nth-child(2) p:nth-of-type(2) {
+  text-transform: uppercase;
+}
+
+/* search modal */
+.modal#search dialog {
+  max-width: 100%;
+  width: 100%;
+  background-color: var(--color-background);
+  margin-top: 0;
+}
+
+@keyframes slide {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.modal#search dialog[open] {
+  animation: slide 0.3s;
+}
+
+.modal#search dialog::backdrop {
+  background-color: var(--color-background);
+}
+
+.modal#search .close-button {
+  background-color: var(--color-charcoal);
+  border-radius: 50%;
+  border: 8px solid var(--color-background);
+  color: var(--color-charcoal);
+}
+
+.modal#search .close-button::after {
+  content: attr(data-label);
+  position: absolute;
+  top: calc(100% + var(--detail-size-xs));
+  left: 0;
+  font-size: var(--detail-size-xs);
+  font-weight: bold;
+}
+
+.modal#search .close-button .icon.icon-close::before,
+.modal#search .close-button .icon.icon-close::after {
+  width: 18px;
+  height: 3.5px;
+  border-radius: 1px;
+  background-color: var(--color-white);
+}
+
+.modal#search dialog h2 {
+  margin-bottom: var(--spacing-100);
+  color: var(--color-charcoal);
+  font-size: var(--heading-size-m);
+}
+
+.modal#search dialog .modal-content {
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (width >= 1000px) {
+  .modal#search dialog {
+    background-color: transparent;
+  }
+
+  @keyframes fade {
+    from {
+      opacity: 0;
+    }
+  
+    to {
+      opacity: 1;
+    }
+  }
+
+  .modal#search dialog[open] {
+    animation-name: fade;
+  }
+
+  .modal#search dialog::backdrop {
+    background-color: rgb(19 19 19 / 75%);
+  }
+
+  .modal#search .close-button {
+    display: none;
+  }
+
+  .modal#search dialog h2 {
+    display: none;
+  }
+
+  .modal#search dialog .modal-content {
+    margin-top: var(--spacing-100);
+  }
+}
+
+/* add to comparsion list modal */
+.modal#compare dialog {
+  max-width: 450px;
+  background-color: var(--color-background);
+  color: var(--color-gray-900);
+  font-size: var(--body-size-s);
+  font-weight: bold;
+  text-align: center;
+  box-shadow: var(--shadow-default);
+}
+
+.modal#compare dialog::backdrop {
+  background-color: var(--overlay-lighter);
+}
+
+.modal#compare dialog .close-button {
+  background-color: var(--color-charcoal);
+  border-radius: 50%;
+  border: 12px solid var(--color-background);
+}
+
+.modal#compare .close-button .icon.icon-close::before,
+.modal#compare .close-button .icon.icon-close::after {
+  width: 16px;
+}
+
+.modal#compare dialog .product {
+  font-size: var(--body-size-m);
+}
+
+.modal#compare dialog .button-wrapper {
+  justify-content: center;
+}
+
+.modal#compare dialog .button {
+  border: 0;
+  padding: 0;
+  background-color: transparent;
+  color: var(--color-blue);
+  font-size: unset;
+  text-transform: unset;
+}
+
+@media (width >= 900px) {
+  .modal#compare dialog .modal-content {
+    margin-bottom: 44px;
+  }
+}

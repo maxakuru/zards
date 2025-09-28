@@ -361,9 +361,9 @@ function buildPDPBlock(main) {
   const navMeta = document.head.querySelector('meta[name="nav"]');
   if (!navMeta) {
     [
-      ['nav', '/us/en_us/nav/nav'],
-      ['footer', '/us/en_us/footer/footer'],
-      ['nav-banners', '/us/en_us/nav/nav-banners'],
+      ['nav', '/nav/nav'],
+      ['footer', '/footer/footer'],
+      ['nav-banners', '/nav/nav-banners'],
     ].forEach(([name, content]) => {
       const meta = document.createElement('meta');
       meta.name = name;
