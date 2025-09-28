@@ -1,0 +1,206 @@
+.gallery.carousel {
+  place-self: start center;
+  max-width: 620px;
+  padding-bottom: 44px;
+}
+
+@media (width >= 1200px) {
+  .gallery.carousel {
+    max-width: unset;
+  }
+}
+
+.gallery.carousel > ul > li {
+  flex: 0 0 100%;
+  width: 100%;
+  text-align: center;
+  justify-content: center;
+}
+
+.gallery.carousel > ul > li picture {
+  width: 100%;
+}
+
+.gallery.carousel nav {
+  display: flex;
+  align-items: flex-end;
+  pointer-events: none;
+}
+
+.gallery.carousel nav button.nav-arrow {
+  top: calc(50% - 15px);
+  border-radius: 50%;
+  background-color: var(--color-gray-300);
+  color: var(--color-gray-800);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s, left 0.2s, right 0.2s;
+}
+
+.gallery.carousel:hover nav button.nav-arrow {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.gallery.carousel nav button.nav-arrow:disabled,
+.gallery.carousel:hover nav button.nav-arrow:disabled {
+  opacity: 0.2;
+}
+
+.gallery.carousel nav button.nav-arrow::after {
+  border-width: 2px;
+}
+
+.gallery.carousel nav button.nav-arrow.nav-arrow-previous {
+  left: -52px;
+}
+
+.gallery.carousel:hover nav button.nav-arrow.nav-arrow-previous {
+  left: var(--spacing-60);
+}
+
+.gallery.carousel nav button.nav-arrow.nav-arrow-next {
+  right: -52px;
+}
+
+.gallery.carousel:hover nav button.nav-arrow.nav-arrow-next {
+  right: var(--spacing-60);
+}
+
+.gallery.carousel nav [role='radiogroup'] {
+  gap: 0;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+.gallery.carousel nav [role='radiogroup'] button {
+  width: 44px;
+  height: 44px;
+  line-height: 0;
+  text-align: center;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.gallery.carousel nav [role='radiogroup'] button::after {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border: 1px solid var(--color-gray-800);
+  border-radius: 50%;
+  background-color: transparent;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+.gallery.carousel nav [role='radiogroup'] button[aria-checked='true']::after {
+  border-color: transparent;
+  background-color: #ff5501;
+}
+
+.gallery.carousel nav [role='radiogroup'] button img {
+  display: none;
+}
+
+@media (width >= 900px) {
+  .gallery.carousel {
+    justify-self: start;
+    padding-bottom: calc(58px + var(--spacing-200));
+  }
+
+  .gallery.carousel nav button.nav-arrow {
+    top: calc(50% - 58px + var(--spacing-200));
+  }
+
+  .gallery.carousel:hover nav button.nav-arrow.nav-arrow-previous {
+    left: var(--spacing-100);
+  }
+  
+  .gallery.carousel:hover nav button.nav-arrow.nav-arrow-next {
+    right: var(--spacing-100);
+  }
+
+  .gallery.carousel nav [role='radiogroup'] {
+    gap: var(--spacing-60);
+    justify-content: safe center;
+  }
+
+  .gallery.carousel nav [role='radiogroup'] button {
+    width: 58px;
+    min-width: 58px;
+    height: 58px;
+    border: 1px solid var(--color-gray-500);
+    transition: border-color 0.2s;
+  }
+
+  .gallery.carousel nav [role='radiogroup'] button::after {
+    content: none;
+  }
+
+  .gallery.carousel nav [role='radiogroup'] button[aria-checked='true'] {
+    border-color: var(--color-charcoal);
+  }
+
+  .gallery.carousel nav [role='radiogroup'] button img {
+    display: block;
+  }
+}
+
+.gallery.carousel a.video-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  cursor: pointer;
+}
+
+.gallery.carousel a.video-wrapper::after {
+  content: '';
+  color: var(--color-white);
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  outline: 2px solid;
+  padding: 0;
+}
+
+.gallery.carousel a.video-wrapper::before {
+  color: var(--color-white);
+  content: '';
+  display: block;
+  box-sizing: border-box;
+  position: absolute;
+  width: 0;
+  height: 48px;
+  border-top: 24px solid transparent;
+  border-bottom: 24px solid transparent;
+  border-left: 36px solid;
+  top: 50%;
+  left: calc(50% + 4px);
+  transform: translate(-50%, -50%);
+}
+
+@media (width >= 900px) {
+  .gallery.carousel nav [role='radiogroup'] button {
+    position: relative;
+  }
+
+  .gallery.carousel nav [role='radiogroup'] button.video-thumbnail::before {
+    color: var(--color-white);
+    content: '';
+    display: block;
+    box-sizing: border-box;
+    position: absolute;
+    width: 0;
+    height: 24px;
+    border-top: 12px solid transparent;
+    border-bottom: 12px solid transparent;
+    border-left: 18px solid;
+    top: 50%;
+    left: calc(50% + 2px);
+    transform: translate(-50%, -50%);
+  }
+}
