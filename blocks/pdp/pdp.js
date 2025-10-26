@@ -50,27 +50,29 @@ function renderDetails(block) {
   return detailsContainer;
 }
 
-function renderContent(detailsContainer) {
-  const contentContainer = document.createElement('div');
-  contentContainer.classList.add('pdp-content-fragment');
-  const fragmentPath = window.location.pathname.replace('/products/', '/products/fragments/');
-  const insertFragment = async () => {
-    const fragment = await loadFragment(fragmentPath);
-    if (fragment) {
-      const sections = [...fragment.querySelectorAll('main > div.section')];
-      while (sections.length > 0) {
-        const section = sections.shift();
-        if (section.querySelector('h3#features')) {
-          detailsContainer.innerHTML = '<h2>About</h2>';
-          detailsContainer.append(section);
-        } else {
-          contentContainer.append(section);
-        }
-      }
+function renderContent(block) {
+  const { jsonLdData } = window;
+  const { custom } = jsonLdData;
+
+  block.querySelectorAll(':scope > div')?.forEach((div) => {
+    // Temporary fix to remove divs that don't have a class
+    // or the specifications block in initial html
+    if (div.classList.length === 0 || div.classList.contains('specifications')) {
+      div.remove();
     }
-  };
-  insertFragment();
-  return contentContainer;
+  });
+
+  const { features } = window;
+  if (features) {
+    const detailsContainer = renderDetails(features);
+    block.append(detailsContainer);
+  }
+
+  const { specifications } = window;
+  if (specifications) {
+    const specsContainer = renderSpecs(specifications, custom, jsonLdData.name);
+    block.append(specsContainer);
+  }
 }
 
 function renderFreeShipping(offers) {
@@ -206,23 +208,13 @@ export default async function decorate(block) {
     shareContainer,
   );
 
-  const detailsContainer = renderDetails(block);
-  const contentContainer = renderContent(detailsContainer);
-
-  /* remove buttons styling from details */
-  detailsContainer.querySelectorAll('.button').forEach((button) => {
-    button.classList.remove('button');
-    button.parentElement.classList.remove('button-wrapper');
-  });
+  renderContent(block);
 
   block.append(
     alertContainer || '',
     titleContainer,
     galleryContainer,
     buyBox,
-    contentContainer,
-    detailsContainer,
-    '',
     '',
     relatedProductsContainer || '',
   );
