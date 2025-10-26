@@ -1,12 +1,17 @@
+main > .section.hero-container {
+  margin-top: 0;
+}
+
 .hero-container .hero-wrapper {
   max-width: unset;
   padding: 0;
+  margin-top: 0;
 }
 
 .hero {
   position: relative;
   padding: 40px 24px;
-  min-height: 300px;
+  min-height: 400px;
 }
 
 .hero h1 {
@@ -14,11 +19,13 @@
   margin-left: auto;
   margin-right: auto;
   color: var(--background-color);
+  z-index: 1;
+  position: relative;
 }
 
 .hero picture {
   position: absolute;
-  z-index: -1;
+  /* z-index: -1; */
   inset: 0;
   object-fit: cover;
   box-sizing: border-box;

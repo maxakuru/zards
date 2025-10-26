@@ -39,8 +39,8 @@ footer section {
     display: grid;
     grid-template:
       "links form" auto
-      "links social" auto
-      "copyright copyright" auto / 2fr 1fr;
+      "social form" auto
+      "copyright copyright" auto;
   }
 }
 
@@ -133,7 +133,7 @@ footer .footer-links li.subsection p {
 
 @media (width >= 600px) {
   footer .footer-links > div > ul {
-    display: grid;
+    /* display: grid; */
     grid-template-columns: repeat(3, 1fr);
   }
 

@@ -80,7 +80,7 @@
  @media (width >= 1000px) {
    :root {
      /* widths and heights */
-     --header-height: 84px;
+     --header-height: 74px;
    }
  }
  
