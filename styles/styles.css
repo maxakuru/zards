@@ -526,7 +526,7 @@
  a.button:hover,
  button.button:hover,
  button.button:focus {
-   border-color: var(--color-red);
+   border-color: var(--color-lapis);
    background-color: var(--color-gray-100);
  }
  

@@ -64,6 +64,17 @@ footer .footer-social {
   grid-area: social;
 }
 
+footer .footer-social > div {
+  display: flex;
+  justify-content: space-around;
+}
+
+@media (width >= 800px) {
+  footer .footer-social > div {
+    justify-content: flex-start;
+  }
+}
+
 /* stylelint-disable-next-line no-descending-specificity */
 footer .footer-social a {
   color: var(--color-gray);
@@ -138,7 +149,7 @@ footer .footer-links li.subsection p {
   }
 
   footer .footer-links li {
-    grid-column: 3;
+    grid-column: 1;
   }
 
   footer .footer-links li.subsection {
