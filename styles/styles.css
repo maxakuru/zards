@@ -155,6 +155,10 @@
    margin: var(--spacing-500) 0;
    scroll-margin: 100px 0;
  }
+
+ main .section:first-child {
+  margin-top: 0;
+ }
  
  main > .section > div {
    margin: var(--horizontal-spacing) auto;

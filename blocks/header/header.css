@@ -48,10 +48,15 @@ header .icon-wrapper .icon {
   text-align: center;
 }
 
+header .icon-wrapper .icon.icon-cart svg {
+  height: 1.2em;
+  width: 1.2em;
+}
+
 header section {
   display: grid;
   grid-template:
-    'hamburger title cart' var(--header-height)
+    'cart title hamburger' var(--header-height)
     /* 'tools tools tools' 80px */
     'sections sections sections' 1fr / auto 1fr auto;
   place-items: center;
