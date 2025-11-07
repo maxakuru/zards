@@ -225,7 +225,7 @@ import {
   function createProductButton(product, ph, label, btnClass) {
     const button = document.createElement('p');
     button.classList.add(`plp-${toClassName(label)}`, 'button-container');
-    button.innerHTML = `<a href="${product.path}" class="button ${btnClass}">${ph[toCamelCase(label)]}</a>`;
+    button.innerHTML = `<a href="${product.path}" class="button ${btnClass}">${ph[toCamelCase(label)] || label}</a>`;
     return button;
   }
   
