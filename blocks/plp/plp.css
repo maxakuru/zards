@@ -1,4 +1,4 @@
-@import url('../pdp/color-swatches.css');
+/* @import url('../pdp/color-swatches.css'); */
 
 /* stylelint-disable */
 main div.plp-container {
@@ -229,10 +229,18 @@ main .plp-product-card:hover {
   border-color: var(--color-gray-500);
 }
 
+main span.plp-product-image {
+    display: flex;
+    justify-content: space-around;
+    min-height: 300px;
+    min-width: 300px;
+}
+
 main .plp-product-card img {
-  width: 100%;
-  height: auto;
-  display: block;
+    width: auto;
+    max-height: 300px;
+    max-width: 300px;
+    object-fit: contain;
 }
 
 main .plp-product-card h4 {

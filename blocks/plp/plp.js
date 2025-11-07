@@ -7,6 +7,11 @@ import {
     decorateBlock,
     loadBlock,
   } from '../../scripts/aem.js';
+
+  const FACETS = {
+    set: {},
+    format: {},
+  };
   
   /**
    * Fetches and filters products from the product index.
@@ -26,49 +31,50 @@ import {
         skuIndex[row.sku] = row;
       });
   
-      // fetch the catalog config
-      const catalog = await fetch('/products/config/catalog.json');
-      const catalogData = await catalog.json();
-  
-      // build a lookup map of product path > catalog data for category information
-      const catalogProducts = {};
-      catalogData.data.forEach((row) => {
-        const path = new URL(row.URL).pathname;
-        catalogProducts[path] = row;
-      });
-  
       const populateIndex = async (data) => {
+        console.log('data', data);
         const topLevelProducts = data
-          .filter((row) => !row.parentSku && row.title && row.price && (row.availability === 'InStock'));
+          .filter((row) => !row.parentSku && row.sku && row.name && row.price && (row.availability === 'InStock'));
         const products = [];
         for (let i = 0; i < topLevelProducts.length; i += 1) {
           const row = topLevelProducts[i];
+          row.set = row.set || 'N/A';
+          row.format = row.format || 'N/A';
+
           const variants = row.variantSkus ? row.variantSkus.split(',').map((e) => skuIndex[e.trim()]) : [];
-          const colors = variants.map((child) => child.color);
-          const availability = variants.map((child) => child.availability).join(',');
+          const availability = variants.length 
+            ? variants.map((child) => child.availability).join(',')
+            : row.availability;
           if (availability.includes('InStock')) {
             row.availability = availability;
             row.path = `/products/${row.urlKey}`;
-            row.colors = colors.join(',');
-            row.category = catalogProducts[row.path] ? catalogProducts[row.path].Categories : '';
-            row.collection = catalogProducts[row.path] ? catalogProducts[row.path].Collections : '';
-            row.productType = catalogProducts[row.path] ? catalogProducts[row.path]['Product Type'] : '';
-            const heroImage = variants[0] && variants[0].image ? variants[0].image : row.image;
-            row.image = new URL(heroImage, new URL(row.path, window.location.href)).toString();
+            const images = ((variants[0] && variants[0].images 
+                ? variants[0].images 
+                : row.images) || '').split(',');
+            
+            row.image = new URL(images[0] || 'missing.png', new URL(row.path, window.location.href)).toString();
           }
           products.push(row);
         }
         return products;
       };
       const products = await populateIndex(json.data);
+      console.log('products', products);
   
       // build a path-based lookup for direct product access
       const lookup = {};
       products.forEach((row) => {
-        lookup[row.path] = row;
+        if(row.path) {
+            lookup[row.path] = row;
+        }
       });
-      window.productIndex = { data: json.data, lookup };
+      window.productIndex = { data: json.data.filter(row => row.sku && !row.sku.includes('test')), lookup };
     }
+
+    console.log('config', config);
+    console.log('facets', facets);
+    console.log('window.productIndex', window.productIndex);
+
   
     // simple array lookup
     if (Array.isArray(config)) {
@@ -84,6 +90,7 @@ import {
     keys.forEach((key) => {
       tokens[key] = config[key].split(',').map((t) => t.trim());
     });
+    console.log('tokens', tokens);
   
     // filter products based on config
     const results = window.productIndex.data.filter((row) => {
@@ -95,8 +102,11 @@ import {
           matched = tokens[key].some((t) => rowValues.includes(t));
         }
         if (key === 'fulltext') {
-          const fulltext = row.title.toLowerCase();
+          const fulltext = row.name.toLowerCase();
           matched = fulltext.includes(config.fulltext.toLowerCase());
+        }
+        if(key === 'category' && tokens[key].includes('All')) {
+            matched = true;
         }
         filterMatches[key] = matched;
         return matched;
@@ -136,14 +146,20 @@ import {
   /**
    * Creates a product image element with lazy loading.
    * @param {Object} product - Product data object
-   * @returns {HTMLImageElement} Product image element
+   * @returns {HTMLSpanElement} Product image element container
    */
   function createProductImage(product) {
+    console.log('product', product, product.image, product.images?.[0]?.url);
+    const container = document.createElement('span');
+    container.className = 'plp-product-image';
+
     const image = document.createElement('img');
     image.src = product.image || product.images?.[0]?.url || '';
     image.alt = product.title || product.name || '';
     image.loading = 'lazy';
-    return image;
+
+    container.appendChild(image);
+    return container;
   }
   
   /**
@@ -226,11 +242,11 @@ import {
     const image = createProductImage(product);
     const title = createProductTitle(product);
     const price = createProductPrice(product);
-    const colors = createProductColors(product);
+    // const colors = createProductColors(product);
     const viewDetails = createProductButton(product, ph, 'View Details', 'emphasis');
-    const compare = createProductButton(product, ph, 'Compare');
+    // const compare = createProductButton(product, ph, 'Compare');
   
-    card.append(image, title, price, colors, viewDetails, compare);
+    card.append(image, title, price, viewDetails);
     card.addEventListener('click', () => {
       window.location.href = product.path;
     });
@@ -448,16 +464,15 @@ import {
     const getPrice = (string) => +string;
   
     const runSearch = async (filterConfig = config) => {
-      const facets = {
-        series: {}, collection: {}, colors: {}, productType: {},
-      };
+      const facets = JSON.parse(JSON.stringify(FACETS));
       const sorts = {
-        name: (a, b) => a.title.localeCompare(b.title),
+        name: (a, b) => a.name.localeCompare(b.name),
         'price-asc': (a, b) => getPrice(a.price) - getPrice(b.price),
         'price-desc': (a, b) => getPrice(b.price) - getPrice(a.price),
         featured: (a, b) => getPrice(b.price) - getPrice(a.price),
       };
       const results = await lookupProducts(filterConfig, facets);
+      console.log(results);
       const sortBy = document.getElementById('plp-sortby') ? document.getElementById('plp-sortby').dataset.sort : 'featured';
       results.sort(sorts[sortBy]);
       block.querySelector('#plp-results-count').textContent = results.length;
