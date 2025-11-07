@@ -4,6 +4,7 @@
  * @returns {Object} An object containing the final price and regular price.
  */
 export function extractPricing(element) {
+  console.log("extractPricing", element);
   if (!element) return null;
 
   const pricingText = element.textContent.trim();
@@ -12,7 +13,7 @@ export function extractPricing(element) {
   // \$ - matches literal dollar sign
   // ([\d,]+) - matches one or more digits or commas (for thousands)
   // \.\d{2} - matches decimal point followed by exactly 2 digits
-  const priceMatch = pricingText.match(/\$([\d,]+\.\d{2})/g);
+  const priceMatch = pricingText.match(/\$([\d,]+(\.\d{2})?)/g);
 
   if (!priceMatch) return null;
 

@@ -59,7 +59,6 @@ import {
         return products;
       };
       const products = await populateIndex(json.data);
-      console.log('products', products);
   
       // build a path-based lookup for direct product access
       const lookup = {};
@@ -70,11 +69,6 @@ import {
       });
       window.productIndex = { data: json.data.filter(row => row.sku && !row.sku.includes('test')), lookup };
     }
-
-    console.log('config', config);
-    console.log('facets', facets);
-    console.log('window.productIndex', window.productIndex);
-
   
     // simple array lookup
     if (Array.isArray(config)) {
@@ -90,7 +84,6 @@ import {
     keys.forEach((key) => {
       tokens[key] = config[key].split(',').map((t) => t.trim());
     });
-    console.log('tokens', tokens);
   
     // filter products based on config
     const results = window.productIndex.data.filter((row) => {
@@ -149,7 +142,6 @@ import {
    * @returns {HTMLSpanElement} Product image element container
    */
   function createProductImage(product) {
-    console.log('product', product, product.image, product.images?.[0]?.url);
     const container = document.createElement('span');
     container.className = 'plp-product-image';
 
