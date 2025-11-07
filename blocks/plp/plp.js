@@ -38,8 +38,8 @@ import {
         const products = [];
         for (let i = 0; i < topLevelProducts.length; i += 1) {
           const row = topLevelProducts[i];
-          row.set = row.set || 'N/A';
-          row.format = row.format || 'N/A';
+          row.set = row.set || 'Other';
+          row.format = row.format || 'Other';
 
           const variants = row.variantSkus ? row.variantSkus.split(',').map((e) => skuIndex[e.trim()]) : [];
           const availability = variants.length 
@@ -518,8 +518,7 @@ import {
   }
   
   export default async function decorate(block) {
-    // const ph = await fetchPlaceholders();
-    const ph = {};
+    const ph = await fetchPlaceholders();
     const config = readBlockConfig(block);
     const isCarousel = block.classList.contains('carousel');
   
