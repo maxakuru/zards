@@ -73,9 +73,5 @@ export default function renderPricing(block, variant) {
     pricingContainer.appendChild(savingsContainer);
   }
 
-  const paymentsPlaceholder = document.createElement('div');
-  paymentsPlaceholder.classList.add('pdp-payments-placeholder');
-  pricingContainer.append(paymentsPlaceholder);
-
   return pricingContainer;
 }

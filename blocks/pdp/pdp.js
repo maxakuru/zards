@@ -1,25 +1,17 @@
-import { loadScript, toClassName, getMetadata } from "../../scripts/aem.js";
 import renderAddToCart from "./add-to-cart.js";
 import renderGallery from "./gallery.js";
 import renderPricing, { extractPricing } from "./pricing.js";
-// eslint-disable-next-line import/no-cycle
-import { renderOptions, onOptionChange } from "./options.js";
-import { loadFragment } from "../fragment/fragment.js";
+import renderSpecs from './specs.js';
 import { checkOutOfStock } from "../../scripts/scripts.js";
-import { openModal } from "../modal/modal.js";
 
 /**
  * Renders the title section of the PDP block.
  * @param {Element} block - The PDP block element
  * @returns {Element} The title container element
  */
-function renderTitle(block, custom, reviewsId) {
+function renderTitle(block, custom) {
   const titleContainer = document.createElement("div");
   titleContainer.classList.add("title");
-
-  const reviewsPlaceholder = document.createElement("div");
-  reviewsPlaceholder.classList.add("pdp-reviews-summary-placeholder");
-  reviewsPlaceholder.innerHTML = `<div data-bv-show="rating_summary" data-bv-product-id="${reviewsId}">`;
 
   const { collection } = custom;
   const collectionContainer = document.createElement("p");
@@ -28,8 +20,7 @@ function renderTitle(block, custom, reviewsId) {
 
   titleContainer.append(
     collectionContainer,
-    block.querySelector("h1:first-of-type"),
-    reviewsPlaceholder
+    block.querySelector("h1:first-of-type")
   );
 
   return titleContainer;
@@ -37,16 +28,21 @@ function renderTitle(block, custom, reviewsId) {
 
 /**
  * Renders the details section of the PDP block.
- * @param {Element} block - The PDP block element
+ * @param {Element} features - The features element from the fragment
  * @returns {Element} The details container element
  */
-function renderDetails(block) {
-  const detailsContainer = document.createElement("div");
-  detailsContainer.classList.add("details");
-  detailsContainer.append(...block.children);
-  const h2 = document.createElement("h2");
-  h2.textContent = "About";
+function renderDetails(features) {
+  const detailsContainer = document.createElement('div');
+  detailsContainer.classList.add('details');
+  detailsContainer.append(...features.children);
+  const h2 = document.createElement('h2');
+  h2.textContent = 'About';
   detailsContainer.prepend(h2);
+  // remove the h3 title
+  const h3 = detailsContainer.querySelector('h3');
+  if (h3) {
+    h3.remove();
+  }
   return detailsContainer;
 }
 
@@ -201,10 +197,8 @@ export default async function decorate(block) {
   const { jsonLdData, variants } = window;
   const { custom, offers } = jsonLdData;
 
-  const reviewsId =
-    custom.reviewsId || toClassName(getMetadata("sku")).replace(/-/g, "");
   const galleryContainer = renderGallery(block, variants);
-  const titleContainer = renderTitle(block, custom, reviewsId);
+  const titleContainer = renderTitle(block, custom);
   const alertContainer = renderAlert(block, custom);
   const relatedProductsContainer = renderRelatedProducts(custom);
 
@@ -212,16 +206,14 @@ export default async function decorate(block) {
   buyBox.classList.add("pdp-buy-box");
 
   const pricingContainer = renderPricing(block);
-  const optionsContainer = renderOptions(block, variants, custom);
   const addToCartContainer = renderAddToCart(block, jsonLdData);
   const freeShippingContainer = renderFreeShipping(offers);
   const shareContainer = renderShare();
+
   buyBox.append(
     pricingContainer,
-    optionsContainer || "",
-    "", // free gift container
+    "", // options container
     addToCartContainer,
-    "",
     freeShippingContainer || "",
     shareContainer
   );
@@ -233,18 +225,8 @@ export default async function decorate(block) {
     titleContainer,
     galleryContainer,
     buyBox,
-    "",
     relatedProductsContainer || ""
   );
-
-  const queryParams = new URLSearchParams(window.location.search);
-  const color = queryParams.get("color");
-
-  if (color) {
-    onOptionChange(block, variants, color);
-  } else if (variants.length > 0) {
-    [window.selectedVariant] = variants;
-  }
 
   buyBox.dataset.sku = window.selectedVariant?.sku || offers[0].sku;
   buyBox.dataset.oos = checkOutOfStock(

@@ -7,7 +7,9 @@
     "lint:js": "eslint .",
     "lint:css": "stylelint \"blocks/**/*.css\" \"styles/*.css\"",
     "lint": "npm run lint:js && npm run lint:css",
-    "lint:fix": "npm run lint:js -- --fix && npm run lint:css -- --fix"
+    "lint:fix": "npm run lint:js -- --fix && npm run lint:css -- --fix",
+    "dev": "npx @adobe/aem-cli up --pages-url 'https://main--zards--maxakuru.aem.network'",
+    "dev:local": "npx @adobe/aem-cli up"
   },
   "repository": {
     "type": "git",
