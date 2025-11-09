@@ -62,6 +62,7 @@ footer .footer-form sub {
 /* social */
 footer .footer-social {
   grid-area: social;
+  display: none;
 }
 
 footer .footer-social > div {
