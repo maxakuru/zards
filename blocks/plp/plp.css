@@ -225,8 +225,8 @@ main .plp-product-card {
 }
 
 main .plp-product-card:hover {
-  background-color: var(--color-gray-400);
-  border-color: var(--color-gray-500);
+  background-color: var(--color-gray-300);
+  border-color: var(--color-gray-400);
 }
 
 main span.plp-product-image {
@@ -257,6 +257,10 @@ main .plp-product-card h4 a {
 main .plp-product-card p {
   margin: 5px 0;
   font-size: var(--body-font-size-s);
+}
+
+main .plp-product-card p a.button {
+    width: 100%;
 }
 
 @media (min-width: 900px) {

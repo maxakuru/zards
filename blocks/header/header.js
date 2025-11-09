@@ -471,7 +471,7 @@ export default async function decorate(block) {
   });
 
   // handle cart click
-  cartLink.addEventListener("click", (e) => {
+  cartLink.addEventListener("click", async (e) => {
     // if on mobile, redirect to cart page
     if (window.innerWidth < 900) {
       return;
@@ -479,43 +479,43 @@ export default async function decorate(block) {
 
     // on desktop, open minicart popover
     e.preventDefault();
-    // e.stopPropagation();
-    const minicart = document.querySelector(".minicart");
+    let minicart = document.querySelector(".minicart");
+
     if (minicart) {
       minicart.setAttribute("aria-hidden", false);
-    } else {
-      import("../cart/cart.js")
-        .then(({ default: decorateCart }) => {
-          const minicart = document.createElement("div");
-          minicart.className = "minicart";
-          minicart.setAttribute("aria-hidden", true);
-          block.append(minicart);
+      return;
+    }
 
-          const cartTitle = document.createElement("h2");
-          cartTitle.textContent = "Cart";
-          minicart.append(cartTitle);
+    try {
+      const { default: decorateCart } = await import("../cart/cart.js");
+      minicart = document.createElement("div");
+      minicart.className = "minicart";
+      minicart.setAttribute("aria-hidden", true);
+      block.append(minicart);
 
-          const cartClose = document.createElement("button");
-          cartClose.className = "close";
-          cartClose.textContent = "X";
-          cartClose.addEventListener("click", () => {
-            minicart.setAttribute("aria-hidden", true);
-          });
-          minicart.append(cartClose);
+      const cartTitle = document.createElement("h2");
+      cartTitle.textContent = "Cart";
+      minicart.append(cartTitle);
 
-          const cartBlock = document.createElement("div");
-          minicart.append(cartBlock);
+      const cartClose = document.createElement("button");
+      cartClose.className = "close";
+      cartClose.textContent = "X";
+      cartClose.addEventListener("click", () => {
+        minicart.setAttribute("aria-hidden", true);
+      });
+      minicart.append(cartClose);
 
-          decorateCart(cartBlock, cartLink);
-          minicart.setAttribute("aria-hidden", false);
-        })
-        .catch((error) => {
-          console.error("Error importing cart:", error);
-          setTimeout(() => {
-            // redirect to cart page
-            window.location.href = "/checkout/cart";
-          }, 1000);
-        });
+      const cartBlock = document.createElement("div");
+      minicart.append(cartBlock);
+
+      decorateCart(cartBlock, cartLink);
+      minicart.setAttribute("aria-hidden", false);
+    } catch (error) {
+      console.error("Error importing cart:", error);
+      setTimeout(() => {
+        // redirect to cart page
+        window.location.href = "/checkout/cart";
+      }, 1000);
     }
   });
 }

@@ -80,7 +80,6 @@ div.section.cart-section .cart-wrapper {
 
 @media (width >= 600px) {
     .cart-item .cart-item-product {
-        gap: 1em;
         grid-template: 'image link'
                     'image price' / fit-content(150px) 1fr;
     }
@@ -102,6 +101,7 @@ div.section.cart-section .cart-wrapper {
 .cart-item .cart-item-product span.image {
     grid-area: image;
     width: 150px;
+    min-height: 150px;
     display: flex;
 }
 

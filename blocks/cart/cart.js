@@ -47,7 +47,7 @@ function renderQuantityPicker(cart, item, container, totalEl) {
     removeButton.textContent = "Remove";
     removeButton.classList.add("remove-button");
     removeButton.addEventListener("click", () => {
-        // cart.removeItem(item.sku);
+        cart.removeItem(item.sku);
         container.closest('span .cart-item').remove();
     });
 
@@ -70,6 +70,7 @@ function renderQuantityPicker(cart, item, container, totalEl) {
         }
         cart.updateItem(item.sku, newQty);
         qtyInput.value = newQty;
+        console.log('updating totalEl: ', item.price * newQty);
         totalEl.textContent = `$${item.price * newQty}`;
         totalEl.setAttribute("data-total", item.price * newQty);
     });
@@ -147,7 +148,7 @@ export default async function decorate(block, parent) {
   // footer subtotal
   const subtotalEl = block.querySelector(".cart-footer-total");
   subtotalEl.textContent = `$${cart.subtotal}`;
-  document.body.addEventListener("cart:change", () => {
+  document.addEventListener("cart:change", () => {
     subtotalEl.textContent = `$${cart.subtotal}`;
   });
 }
