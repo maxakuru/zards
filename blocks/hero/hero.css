@@ -14,7 +14,7 @@ main > .hero-container.section {
   align-items: center;
   position: relative;
   width: 100%;
-  min-height: 575px;
+  min-height: 350px;
 }
 
 .hero {
@@ -79,6 +79,10 @@ main > .hero-container.section {
 
   .hero .eyebrow {
     font-size: 18px;
+  }
+
+  .hero, .hero > div {
+    min-height: 550px;
   }
 }
 
