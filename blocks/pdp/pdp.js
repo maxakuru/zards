@@ -107,7 +107,6 @@ function renderAlert(block, custom) {
     /* save now */
     const pricingElement = block.querySelector("p:nth-of-type(1)");
     const pricing = extractPricing(pricingElement);
-    console.log("pricing", pricing);
     if (pricing.regular && pricing.regular > pricing.final) {
       alertContainer.classList.add("pdp-promo-alert");
       alertContainer.innerText = "Save Now!";
@@ -206,7 +205,7 @@ export default async function decorate(block) {
   buyBox.classList.add("pdp-buy-box");
 
   const pricingContainer = renderPricing(block);
-  const addToCartContainer = renderAddToCart(block, jsonLdData);
+  const addToCartContainer = renderAddToCart(jsonLdData, window.selectedVariant?.sku);
   const freeShippingContainer = renderFreeShipping(offers);
   const shareContainer = renderShare();
 

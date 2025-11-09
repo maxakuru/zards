@@ -24,8 +24,11 @@ function toggleFixedAddToCart(container) {
     const atcBtnPos = atcButton.getBoundingClientRect().bottom;
 
     // apply or remove "fixed" class and dynamic top offset
-    if (atcBtnPos < 0 || (container.classList.contains("fixed") && ogBtnPos && scrollY > ogBtnPos)) {
-      if(!ogBtnPos) {
+    if (
+      atcBtnPos < 0 ||
+      (container.classList.contains("fixed") && ogBtnPos && scrollY > ogBtnPos)
+    ) {
+      if (!ogBtnPos) {
         ogBtnPos = scrollY;
       }
       const offset = Math.max(headerHeight - scrollY, 0);
@@ -59,34 +62,21 @@ export function isVariantAvailableForSale(variant) {
 
 /**
  * Renders the main add to cart functionality with quantity selector and add to cart button.
- * Handles product variants, warranties, bundles, and cart integration with Magento.
- * Falls back to "Find Locally" or "Find Dealer" buttons based on product configuration.
- * @param {HTMLElement} block - PDP block element
- * @param {Object} parent - Parent product object
+ * @param {Object} product - product data
+ * @param {string} variantSku - if undefined uses the first offer
  * @returns {HTMLElement} Container div with either add to cart functionality or alternative buttons
  */
-export default function renderAddToCart(block, parent) {
-  // Default selectedVariant to parent product, if simple product, selectedVariant will be undefined
-  let selectedVariant = parent.offers?.[0]?.custom ? parent.offers[0] : parent;
-  if (window.selectedVariant) {
-    // If we actually have a selected variant, use it instead of the parent product
-    const { sku: selectedSku } = window.selectedVariant;
-    selectedVariant = parent.offers.find(
-      (variant) => variant.sku === selectedSku
-    );
+export default function renderAddToCart(product, variantSku) {
+  // find the applicable offer
+  let offer = product.offers?.[0];
+  if (variantSku) {
+    offer = product.offers.find((variant) => variant.sku === variantSku);
   }
 
-  // Only look at findLocally and findDealer from parent product
-  const { findLocally, findDealer } = parent;
-  block.classList.remove("pdp-find-locally");
-  block.classList.remove("pdp-find-dealer");
-
-  // Figure out if the selected variant is available for sale
-  const isAvailableForSale = isVariantAvailableForSale(selectedVariant);
-
-  // If we have a selected variant, use it's custom object,
-  // otherwise use the parent product's custom object
-  const { custom } = selectedVariant || parent;
+  const custom = {
+    ...(product.custom || {}),
+    ...(offer.custom || {}),
+  };
 
   // create main add to cart container
   const addToCartContainer = document.createElement("div");
@@ -120,41 +110,33 @@ export default function renderAddToCart(block, parent) {
   // create and configure add to cart button
   const addToCartButton = document.createElement("button");
   addToCartButton.textContent = "Add to Cart";
-
-  // assemble the quantity container with select and button
   quantityContainer.appendChild(addToCartButton);
-
-  // add quantity container to main add to cart container
   addToCartContainer.appendChild(quantityContainer);
 
   toggleFixedAddToCart(addToCartContainer);
 
   // add click event handler for add to cart functionality
   addToCartButton.addEventListener("click", async () => {
-    // update button state to show loading
+    // disable button
     addToCartButton.textContent = "Adding...";
     addToCartButton.setAttribute("aria-disabled", "true");
 
-    // import required modules for cart functionality
-    const { cartApi } = await import("../../scripts/minicart/api.js");
+    const cartApi = (await import("../../scripts/cart.js")).default;
 
-    // get selected quantity and product SKU
-    const quantity =
-      document.querySelector(".quantity-container select")?.value || 1;
-    const sku = getMetadata("sku");
+    const quantity = quantitySelect?.value ? +quantitySelect.value : 1;
+    const { sku, price, name } = offer;
+    await cartApi.addItem({ 
+      sku, 
+      quantity, 
+      price, 
+      name, 
+      urlKey: custom.urlKey,
+      image: offer.image[0],
+      square_item_id: custom.square_item_id,
+      square_variation_id: custom.square_variation_id,
+     });
 
-    // build array of selected options (variants, warranties, required bundles)
-    const selectedOptions = [];
-
-    // add selected variant option if available
-    if (window.selectedVariant?.options?.uid) {
-      selectedOptions.push(window.selectedVariant.options.uid);
-    }
-
-    // add product to cart with selected options and quantity
-    await cartApi.addToCart(sku, selectedOptions, quantity);
-
-    // update button state to show ATC
+    // reenable button
     addToCartButton.textContent = "Add to Cart";
     addToCartButton.removeAttribute("aria-disabled");
   });

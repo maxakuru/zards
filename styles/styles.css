@@ -65,6 +65,10 @@
    --horizontal-spacing: var(--spacing-400);
    --site-width: 2000px;
  }
+
+ body {
+  background-color: var(--layer-base);
+ }
  
  body.pdp-template {
    --site-width: 2000px;

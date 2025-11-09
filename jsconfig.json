@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+      "target": "ESNext",
+      "module": "ESNext",
+      "moduleResolution": "Node",
+      "checkJs": true,
+      "allowJs": true
+    },
+    "include": [
+      "./scripts/**/*.js",
+      "./types/global.d.ts"
+    ],
+    "exclude": [
+      "node_modules"
+    ]
+  }

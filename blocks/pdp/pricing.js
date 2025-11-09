@@ -4,7 +4,6 @@
  * @returns {Object} An object containing the final price and regular price.
  */
 export function extractPricing(element) {
-  console.log("extractPricing", element);
   if (!element) return null;
 
   const pricingText = element.textContent.trim();

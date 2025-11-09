@@ -1,20 +1,23 @@
-import { getMetadata, toClassName } from '../../scripts/aem.js';
-import { swapIcons, getCookies } from '../../scripts/scripts.js';
-import { loadFragment } from '../fragment/fragment.js';
+import { getMetadata, toClassName } from "../../scripts/aem.js";
+import { swapIcons, getCookies } from "../../scripts/scripts.js";
+import { loadFragment } from "../fragment/fragment.js";
 
 // media query match that indicates desktop width
-const isDesktop = window.matchMedia('(width >= 1000px)');
+const isDesktop = window.matchMedia("(width >= 1000px)");
 
 /**
  * Rewrites links to use the current hostname.
  * @param {HTMLElement} element - Element within which to rewrite links
  */
 function rewriteLinks(element) {
-  if (window.location.hostname.endsWith('.zards.cards')) {
+  if (window.location.hostname.endsWith(".zards.cards")) {
     const links = element.querySelectorAll('a[href^="https://zards.cards"]');
     links.forEach((link) => {
-      if (link.href.includes('zards.cards')) {
-        link.href = link.href.replace('https://zards.cards', window.location.origin);
+      if (link.href.includes("zards.cards")) {
+        link.href = link.href.replace(
+          "https://zards.cards",
+          window.location.origin
+        );
       }
     });
   }
@@ -27,22 +30,22 @@ function rewriteLinks(element) {
  * @param {HTMLElement} hamburger - Hamburger toggle button
  */
 function toggleHeader(desktop, nav, hamburger) {
-  const hamburgerWrapper = hamburger.closest('div');
-  const controls = hamburger.getAttribute('aria-controls').split(' ');
+  const hamburgerWrapper = hamburger.closest("div");
+  const controls = hamburger.getAttribute("aria-controls").split(" ");
   const toggleControls = (ids, status) => {
     ids.forEach((id) => {
       const control = nav.querySelector(`#${id}`);
-      if (control) control.setAttribute('aria-hidden', status);
+      if (control) control.setAttribute("aria-hidden", status);
     });
   };
 
   if (desktop) {
     nav.dataset.expanded = true;
-    hamburgerWrapper.setAttribute('aria-hidden', true);
+    hamburgerWrapper.setAttribute("aria-hidden", true);
     toggleControls(controls, false);
   } else {
     nav.dataset.expanded = false;
-    hamburgerWrapper.setAttribute('aria-hidden', false);
+    hamburgerWrapper.setAttribute("aria-hidden", false);
     toggleControls(controls, true);
   }
 }
@@ -53,18 +56,18 @@ function toggleHeader(desktop, nav, hamburger) {
  * @param {HTMLElement} nav - Navigation container
  */
 function toggleHamburger(hamburger, nav) {
-  const expanded = hamburger.getAttribute('aria-expanded') === 'true';
-  hamburger.setAttribute('aria-expanded', !expanded);
-  const controls = hamburger.getAttribute('aria-controls').split(' ');
+  const expanded = hamburger.getAttribute("aria-expanded") === "true";
+  hamburger.setAttribute("aria-expanded", !expanded);
+  const controls = hamburger.getAttribute("aria-controls").split(" ");
   controls.forEach((id) => {
     const control = document.getElementById(id);
     if (control) {
-      control.setAttribute('aria-hidden', expanded);
+      control.setAttribute("aria-hidden", expanded);
     }
   });
   nav.dataset.expanded = !expanded;
-  if (!expanded) document.body.dataset.scroll = 'disabled';
-  else document.body.removeAttribute('data-scroll');
+  if (!expanded) document.body.dataset.scroll = "disabled";
+  else document.body.removeAttribute("data-scroll");
 }
 
 /**
@@ -72,49 +75,55 @@ function toggleHamburger(hamburger, nav) {
  * @param {HTMLElement} tool - Language selector.
  */
 function buildLanguageSelector(tool) {
-  const label = tool.querySelector('p');
-  const options = tool.querySelector('ul');
+  const label = tool.querySelector("p");
+  const options = tool.querySelector("ul");
 
-  const selected = [...options.children].find((option) => option.querySelector('strong'));
-  const selectedIcon = selected.querySelector('.icon');
-  const selectedText = [...selected.querySelectorAll('strong')].pop().textContent;
+  const selected = [...options.children].find((option) =>
+    option.querySelector("strong")
+  );
+  const selectedIcon = selected.querySelector(".icon");
+  const selectedText = [...selected.querySelectorAll("strong")].pop()
+    .textContent;
 
-  const button = document.createElement('button');
-  button.className = 'icon-wrapper';
-  button.setAttribute('aria-haspopup', true);
-  button.setAttribute('aria-expanded', false);
-  button.setAttribute('aria-controls', 'language-menu');
-  button.setAttribute('aria-label', label.textContent);
+  const button = document.createElement("button");
+  button.className = "icon-wrapper";
+  button.setAttribute("aria-haspopup", true);
+  button.setAttribute("aria-expanded", false);
+  button.setAttribute("aria-controls", "language-menu");
+  button.setAttribute("aria-label", label.textContent);
   button.append(selectedIcon.cloneNode(true), selectedText);
 
-  options.setAttribute('role', 'menu');
-  options.id = 'language-menu';
+  options.setAttribute("role", "menu");
+  options.id = "language-menu";
   [...options.children].forEach((option) => {
-    const optionLink = option.querySelector('a');
-    const optionIcon = option.querySelector('.icon');
-    const optionLabels = [...option.querySelectorAll('a')].map((a) => {
-      const span = document.createElement('span');
+    const optionLink = option.querySelector("a");
+    const optionIcon = option.querySelector(".icon");
+    const optionLabels = [...option.querySelectorAll("a")].map((a) => {
+      const span = document.createElement("span");
       span.textContent = a.textContent;
       return span;
     });
-    const optionText = document.createElement('p');
+    const optionText = document.createElement("p");
     optionText.append(...optionLabels);
-    option.innerHTML = '';
+    option.innerHTML = "";
     optionLink.replaceChildren(optionIcon.cloneNode(true), optionText);
     option.append(optionLink);
-    if (!window.location.pathname.includes('/products/')) { // if not on a product page
-      const targetPathSegments = new URL(optionLink.href).pathname.split('/');
-      const currentPathSegments = window.location.pathname.split('/');
-      const optionLinkHref = `${targetPathSegments.slice(0, 3).join('/')}/${currentPathSegments.slice(3).join('/')}`;
+    if (!window.location.pathname.includes("/products/")) {
+      // if not on a product page
+      const targetPathSegments = new URL(optionLink.href).pathname.split("/");
+      const currentPathSegments = window.location.pathname.split("/");
+      const optionLinkHref = `${targetPathSegments
+        .slice(0, 3)
+        .join("/")}/${currentPathSegments.slice(3).join("/")}`;
       optionLink.href = optionLinkHref;
     }
   });
 
   label.replaceWith(button);
 
-  button.addEventListener('click', () => {
-    const expanded = button.getAttribute('aria-expanded') === 'true';
-    button.setAttribute('aria-expanded', !expanded);
+  button.addEventListener("click", () => {
+    const expanded = button.getAttribute("aria-expanded") === "true";
+    button.setAttribute("aria-expanded", !expanded);
   });
 }
 
@@ -125,43 +134,43 @@ function buildLanguageSelector(tool) {
 function sanitizeNavList(ul) {
   [...ul.children].forEach((li) => {
     // unwrap nested <as>
-    li.querySelectorAll('p').forEach((p) => {
-      const onlyChild = p.children.length === 1 && p.querySelector('a');
+    li.querySelectorAll("p").forEach((p) => {
+      const onlyChild = p.children.length === 1 && p.querySelector("a");
       const noOtherContent = p.childNodes.length === 1;
       if (onlyChild && noOtherContent) p.replaceWith(p.firstElementChild);
     });
 
     // de-button
-    li.querySelectorAll('a').forEach((a) => a.removeAttribute('class'));
+    li.querySelectorAll("a").forEach((a) => a.removeAttribute("class"));
 
-    const a = li.querySelector('a');
-    const submenu = li.querySelector('ul');
+    const a = li.querySelector("a");
+    const submenu = li.querySelector("ul");
 
-    if (a && submenu && !li.querySelector('button.submenu-toggle')) {
+    if (a && submenu && !li.querySelector("button.submenu-toggle")) {
       const text = a.textContent.trim();
 
       // generate unique id from link text
       const id = `submenu-${toClassName(text)}`;
       submenu.id = id;
-      submenu.setAttribute('aria-hidden', true);
+      submenu.setAttribute("aria-hidden", true);
 
       // add toggle button
-      const toggle = document.createElement('button');
-      toggle.setAttribute('aria-expanded', false);
-      toggle.setAttribute('aria-controls', id);
-      toggle.setAttribute('aria-label', `Toggle ${text} submenu`);
-      toggle.className = 'submenu-toggle';
-      const chevron = document.createElement('i');
-      chevron.className = 'symbol symbol-chevron';
+      const toggle = document.createElement("button");
+      toggle.setAttribute("aria-expanded", false);
+      toggle.setAttribute("aria-controls", id);
+      toggle.setAttribute("aria-label", `Toggle ${text} submenu`);
+      toggle.className = "submenu-toggle";
+      const chevron = document.createElement("i");
+      chevron.className = "symbol symbol-chevron";
       toggle.prepend(chevron);
 
       li.insertBefore(toggle, submenu);
-      li.classList.add('submenu-wrapper');
+      li.classList.add("submenu-wrapper");
 
-      toggle.addEventListener('click', () => {
-        const expanded = toggle.getAttribute('aria-expanded') === 'true';
-        toggle.setAttribute('aria-expanded', !expanded);
-        submenu.setAttribute('aria-hidden', expanded);
+      toggle.addEventListener("click", () => {
+        const expanded = toggle.getAttribute("aria-expanded") === "true";
+        toggle.setAttribute("aria-expanded", !expanded);
+        submenu.setAttribute("aria-hidden", expanded);
       });
 
       // handled nested submenus
@@ -175,24 +184,28 @@ function sanitizeNavList(ul) {
  * @param {HTMLElement} nav - Navigation container element
  */
 function enforceSubmenuState(nav) {
-  const submenuProducts = nav.querySelector('#submenu-products');
-  const toggleProducts = nav.querySelector('[aria-controls="submenu-products"]');
+  const submenuProducts = nav.querySelector("#submenu-products");
+  const toggleProducts = nav.querySelector(
+    '[aria-controls="submenu-products"]'
+  );
 
   if (!submenuProducts || !toggleProducts) return;
 
-  if (isDesktop.matches) { // on desktop, collapse parent and open children
-    submenuProducts.setAttribute('aria-hidden', true);
-    toggleProducts.setAttribute('aria-expanded', false);
+  if (isDesktop.matches) {
+    // on desktop, collapse parent and open children
+    submenuProducts.setAttribute("aria-hidden", true);
+    toggleProducts.setAttribute("aria-expanded", false);
 
-    submenuProducts.querySelectorAll('ul').forEach((ul) => {
-      ul.setAttribute('aria-hidden', false);
-      const li = ul.closest('li');
-      const toggle = li.querySelector('.submenu-toggle');
-      if (toggle) toggle.setAttribute('aria-expanded', true);
+    submenuProducts.querySelectorAll("ul").forEach((ul) => {
+      ul.setAttribute("aria-hidden", false);
+      const li = ul.closest("li");
+      const toggle = li.querySelector(".submenu-toggle");
+      if (toggle) toggle.setAttribute("aria-expanded", true);
     });
-  } else { // on mobile, open parent and allow children to toggle
-    submenuProducts.setAttribute('aria-hidden', false);
-    toggleProducts.setAttribute('aria-expanded', true);
+  } else {
+    // on mobile, open parent and allow children to toggle
+    submenuProducts.setAttribute("aria-hidden", false);
+    toggleProducts.setAttribute("aria-expanded", true);
   }
 }
 
@@ -205,11 +218,11 @@ async function fetchNavFragments(a) {
   try {
     const { pathname } = new URL(a, window.location);
     const fragment = await loadFragment(pathname);
-    const uls = fragment.querySelectorAll('div > ul');
+    const uls = fragment.querySelectorAll("div > ul");
     return [...uls];
   } catch (error) {
     // eslint-disable-next-line no-console
-    console.error('Error fetching nav fragment:', error);
+    console.error("Error fetching nav fragment:", error);
   }
   return null;
 }
@@ -220,7 +233,7 @@ async function fetchNavFragments(a) {
  * @param {string} a - URL to fetch the fragment from
  */
 async function populateNavFragments(li, a) {
-  const ul = li.closest('ul');
+  const ul = li.closest("ul");
   if (!ul) return;
 
   // remove the original <li> (to be replaced with fragment content)
@@ -236,20 +249,20 @@ async function populateNavFragments(li, a) {
     });
   });
 
-  const header = ul.closest('header');
-  const trigger = ul.closest('[data-source]');
-  const button = trigger.querySelector('button');
+  const header = ul.closest("header");
+  const trigger = ul.closest("[data-source]");
+  const button = trigger.querySelector("button");
 
-  trigger.addEventListener('mouseenter', () => {
+  trigger.addEventListener("mouseenter", () => {
     if (!isDesktop.matches) return; // only on desktop
-    if (button.getAttribute('aria-expanded') === 'false') button.click();
+    if (button.getAttribute("aria-expanded") === "false") button.click();
   });
 
-  header.addEventListener('mouseleave', (e) => {
+  header.addEventListener("mouseleave", (e) => {
     if (!isDesktop.matches) return; // only on desktop
     const to = e.relatedTarget;
     if (to && !header.contains(to)) {
-      if (button.getAttribute('aria-expanded') === 'true') button.click();
+      if (button.getAttribute("aria-expanded") === "true") button.click();
     }
   });
 
@@ -265,27 +278,27 @@ async function populateNavFragments(li, a) {
  * @param {string} a - URL to fetch the fragment from
  */
 function setupFragmentLoader(nav, ul, li, a) {
-  const hamburgerButton = nav.querySelector('.nav-hamburger button');
-  const fragment = li.closest('ul');
-  fragment.style.visibility = 'hidden';
-  fragment.parentElement.dataset.source = 'fragment';
+  const hamburgerButton = nav.querySelector(".nav-hamburger button");
+  const fragment = li.closest("ul");
+  fragment.style.visibility = "hidden";
+  fragment.parentElement.dataset.source = "fragment";
   let loaded = false;
 
   // loads the fragment only once, triggered by either event type
   const load = async (e) => {
     if (loaded) return;
     e.preventDefault();
-    ul.removeEventListener('mouseover', load);
-    hamburgerButton.removeEventListener('click', load);
+    ul.removeEventListener("mouseover", load);
+    hamburgerButton.removeEventListener("click", load);
     loaded = true;
 
     await populateNavFragments(li, a);
-    fragment.removeAttribute('style');
+    fragment.removeAttribute("style");
     enforceSubmenuState(nav);
   };
 
-  ul.addEventListener('mouseover', load);
-  hamburgerButton.addEventListener('click', load);
+  ul.addEventListener("mouseover", load);
+  hamburgerButton.addEventListener("click", load);
 }
 
 /**
@@ -294,18 +307,20 @@ function setupFragmentLoader(nav, ul, li, a) {
  */
 export default async function decorate(block) {
   // load nav as fragment
-  const navMeta = getMetadata('nav');
-  const navPath = navMeta ? new URL(navMeta, window.location).pathname : '/nav/nav';
+  const navMeta = getMetadata("nav");
+  const navPath = navMeta
+    ? new URL(navMeta, window.location).pathname
+    : "/nav/nav";
   const fragment = await loadFragment(navPath);
   rewriteLinks(fragment);
 
   // decorate nav DOM
-  block.textContent = '';
-  const nav = document.createElement('section');
-  nav.id = 'nav';
+  block.textContent = "";
+  const nav = document.createElement("section");
+  nav.id = "nav";
   while (fragment.firstElementChild) nav.append(fragment.firstElementChild);
 
-  const classes = ['title', 'sections', 'tools', 'cart'];
+  const classes = ["title", "sections", "tools", "cart"];
   classes.forEach((c, i) => {
     const section = nav.children[i];
     if (section) {
@@ -315,68 +330,72 @@ export default async function decorate(block) {
   });
 
   // decorate icons
-  const icons = nav.querySelectorAll('li .icon');
+  const icons = nav.querySelectorAll("li .icon");
   icons.forEach((i) => {
     const parent = i.parentElement;
-    parent.className = 'icon-wrapper';
+    parent.className = "icon-wrapper";
   });
 
   // build mobile hamburger
-  const hamburgerWrapper = document.createElement('div');
-  hamburgerWrapper.className = 'nav-hamburger';
-  const hamburgerButton = document.createElement('button');
-  hamburgerButton.setAttribute('type', 'button');
-  hamburgerButton.setAttribute('aria-controls', 'nav-sections nav-tools');
-  hamburgerButton.setAttribute('aria-expanded', false);
-  hamburgerButton.setAttribute('aria-label', 'Open navigation');
-  const hamburger = document.createElement('i');
-  hamburger.className = 'symbol symbol-hamburger';
+  const hamburgerWrapper = document.createElement("div");
+  hamburgerWrapper.className = "nav-hamburger";
+  const hamburgerButton = document.createElement("button");
+  hamburgerButton.setAttribute("type", "button");
+  hamburgerButton.setAttribute("aria-controls", "nav-sections nav-tools");
+  hamburgerButton.setAttribute("aria-expanded", false);
+  hamburgerButton.setAttribute("aria-label", "Open navigation");
+  const hamburger = document.createElement("i");
+  hamburger.className = "symbol symbol-hamburger";
   hamburgerButton.append(hamburger);
-  hamburgerButton.addEventListener('click', () => {
+  hamburgerButton.addEventListener("click", () => {
     toggleHamburger(hamburgerButton, nav);
   });
 
-  hamburgerButton.addEventListener('click', () => {
-    nav.querySelectorAll('[data-listener="mouseover"]').forEach((li) => {
-      const { a } = li.dataset;
-      li.removeEventListener('mouseover', populateNavFragments);
-      populateNavFragments(new Event('click'), a);
-    });
-  }, { once: true });
+  hamburgerButton.addEventListener(
+    "click",
+    () => {
+      nav.querySelectorAll('[data-listener="mouseover"]').forEach((li) => {
+        const { a } = li.dataset;
+        li.removeEventListener("mouseover", populateNavFragments);
+        populateNavFragments(new Event("click"), a);
+      });
+    },
+    { once: true }
+  );
 
   hamburgerWrapper.append(hamburgerButton);
   nav.prepend(hamburgerWrapper);
 
   // decorate title
-  const title = nav.querySelector('.nav-title');
+  const title = nav.querySelector(".nav-title");
   if (title) {
-    const a = title.querySelector('a[href]');
+    const a = title.querySelector("a[href]");
     if (!a) {
-      const content = title.querySelector('h1, h2, h3, h4, h5, h6, p');
-      content.className = 'title-content';
+      const content = title.querySelector("h1, h2, h3, h4, h5, h6, p");
+      content.className = "title-content";
       if (content && content.textContent) {
-        const link = document.createElement('a');
-        link.href = '/';
+        const link = document.createElement("a");
+        link.href = "/";
         link.innerHTML = content.innerHTML;
         content.innerHTML = link.outerHTML;
       }
     } else {
-      a.classList.remove('button');
-      a.parentElement.classList.remove('button-wrapper');
+      a.classList.remove("button");
+      a.parentElement.classList.remove("button-wrapper");
     }
   }
 
   // decorate sections
-  const sections = nav.querySelector('.nav-sections');
+  const sections = nav.querySelector(".nav-sections");
   if (sections) {
-    const wrapper = document.createElement('nav');
-    const ul = sections.querySelector('ul');
+    const wrapper = document.createElement("nav");
+    const ul = sections.querySelector("ul");
 
     sanitizeNavList(ul);
 
     // set up fragment loading for all "/nav" links
     ul.querySelectorAll('li a[href*="/nav"]').forEach((a) => {
-      const li = a.closest('li');
+      const li = a.closest("li");
       setupFragmentLoader(nav, ul, li, a);
     });
 
@@ -384,23 +403,25 @@ export default async function decorate(block) {
     sections.replaceChildren(wrapper);
     enforceSubmenuState(sections);
 
-    isDesktop.addEventListener('change', () => {
+    isDesktop.addEventListener("change", () => {
       enforceSubmenuState(sections);
     });
   }
 
   // decorate tools
-  const tools = nav.querySelector('.nav-tools');
+  const tools = nav.querySelector(".nav-tools");
   if (tools) {
-    tools.querySelectorAll('div > ul > li').forEach((t) => {
-      const tool = t.querySelector('.icon');
-      const type = [...tool.classList].filter((c) => c !== 'icon')[0].replace('icon-', '');
-      if (type.includes('flag')) {
+    tools.querySelectorAll("div > ul > li").forEach((t) => {
+      const tool = t.querySelector(".icon");
+      const type = [...tool.classList]
+        .filter((c) => c !== "icon")[0]
+        .replace("icon-", "");
+      if (type.includes("flag")) {
         // enable language selector
-        t.classList.add('nav-tools-language');
+        t.classList.add("nav-tools-language");
         buildLanguageSelector(t);
-      } else if (type.includes('compare')) {
-        t.classList.add('nav-tools-compare');
+      } else if (type.includes("compare")) {
+        t.classList.add("nav-tools-compare");
       }
     });
   }
@@ -408,12 +429,12 @@ export default async function decorate(block) {
   toggleHeader(isDesktop.matches, nav, hamburgerButton);
 
   // enable viewport responsive nav
-  isDesktop.addEventListener('change', (e) => {
+  isDesktop.addEventListener("change", (e) => {
     toggleHeader(e.matches, nav, hamburgerButton);
   });
 
-  const navWrapper = document.createElement('div');
-  navWrapper.className = 'nav-wrapper';
+  const navWrapper = document.createElement("div");
+  navWrapper.className = "nav-wrapper";
   navWrapper.append(nav);
   block.append(navWrapper);
 
@@ -423,25 +444,55 @@ export default async function decorate(block) {
   const cookies = getCookies();
 
   const compareProducts = cookies.compare_products_count;
-  if (!compareProducts || compareProducts === '0') {
-    const compare = block.querySelector('li .icon-compare');
+  if (!compareProducts || compareProducts === "0") {
+    const compare = block.querySelector("li .icon-compare");
     if (compare) {
-      const li = compare.closest('li');
-      li.setAttribute('aria-hidden', true);
+      const li = compare.closest("li");
+      li.setAttribute("aria-hidden", true);
       li.replaceChildren();
     }
   }
 
   const customer = cookies.customer;
   if (customer) {
-    const account = block.querySelector('.icon-account').parentElement;
+    const account = block.querySelector(".icon-account").parentElement;
     account.lastChild.textContent = `${customer}'s Account`;
   }
 
+  const cartLink = block.querySelector(".icon-cart").parentElement;
+
+  // set/update cart item qty bubble
   const cartItems = cookies.cart_items_count;
   if (cartItems && +cartItems > 0) {
-    const cart = block.querySelector('.icon-cart').parentElement;
-    cart.dataset.cartItems = cartItems;
-    cart.lastChild.textContent = `Cart (${cartItems})`;
+    cartLink.dataset.cartItems = cartItems;
   }
+  document.addEventListener("cart:change", (e) => {
+    cartLink.dataset.cartItems = e.detail.cart.itemCount;
+  });
+
+  // handle cart click
+  cartLink.addEventListener("click", () => {
+    // if on mobile, redirect to cart page
+    if (window.innerWidth >= 900) {
+      return;
+    }
+
+    // on desktop, open minicart popover
+    const minicart = document.querySelector(".minicart");
+    if (minicart) {
+      minicart.style.display = "block";
+    } else {
+      import("../cart/cart.js")
+        .then(({ default: decorateCart }) => {
+          decorateCart(block, cartLink);
+        })
+        .catch((error) => {
+          console.error("Error importing cart:", error);
+          setTimeout(() => {
+            // redirect to cart page
+            window.location.href = "/checkout/cart";
+          }, 1000);
+        });
+    }
+  });
 }

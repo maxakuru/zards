@@ -331,10 +331,8 @@ export function checkOutOfStock(sku) {
  * @param {Array<Element>} sections - The sections to parse.
  */
 function parsePDPContentSections(sections) {
-  console.log("sections", sections);
   sections.forEach((section) => {
     const h3 = section.querySelector("h3")?.textContent.toLowerCase();
-    console.log("h3", h3);
     if (h3) {
       if (h3.includes("features")) {
         window.features = section;
@@ -409,7 +407,6 @@ function buildPDPBlock(main) {
  * @param {Element} main The container element
  */
 function buildAutoBlocks(main) {
-  console.log("buildAutoBlocks", main);
   try {
     // autoreplace fragment references
     const fragments = main.querySelectorAll('a[href*="/fragments/"]');
@@ -665,7 +662,6 @@ function autolinkModals(doc) {
  */
 // eslint-disable-next-line import/prefer-default-export
 export function decorateMain(main) {
-  console.log("decorateMain", main);
   decorateIcons(main);
   decorateImages(main);
   buildAutoBlocks(main);
