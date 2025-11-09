@@ -471,20 +471,43 @@ export default async function decorate(block) {
   });
 
   // handle cart click
-  cartLink.addEventListener("click", () => {
+  cartLink.addEventListener("click", (e) => {
     // if on mobile, redirect to cart page
-    if (window.innerWidth >= 900) {
+    if (window.innerWidth < 900) {
       return;
     }
 
     // on desktop, open minicart popover
+    e.preventDefault();
+    // e.stopPropagation();
     const minicart = document.querySelector(".minicart");
     if (minicart) {
-      minicart.style.display = "block";
+      minicart.setAttribute("aria-hidden", false);
     } else {
       import("../cart/cart.js")
         .then(({ default: decorateCart }) => {
-          decorateCart(block, cartLink);
+          const minicart = document.createElement("div");
+          minicart.className = "minicart";
+          minicart.setAttribute("aria-hidden", true);
+          block.append(minicart);
+
+          const cartTitle = document.createElement("h2");
+          cartTitle.textContent = "Cart";
+          minicart.append(cartTitle);
+
+          const cartClose = document.createElement("button");
+          cartClose.className = "close";
+          cartClose.textContent = "X";
+          cartClose.addEventListener("click", () => {
+            minicart.setAttribute("aria-hidden", true);
+          });
+          minicart.append(cartClose);
+
+          const cartBlock = document.createElement("div");
+          minicart.append(cartBlock);
+
+          decorateCart(cartBlock, cartLink);
+          minicart.setAttribute("aria-hidden", false);
         })
         .catch((error) => {
           console.error("Error importing cart:", error);

@@ -102,8 +102,8 @@ function renderQuantityPicker(cart, item, container, totalEl) {
  */
 export default async function decorate(block, parent) {
   if (parent) {
-    // get styles
-    loadCSS(`./cart.css`);
+    // load styles, using minicart
+    loadCSS(`${window.hlx.codeBasePath}/blocks/cart/cart.css`);
   } else {
     block.closest('div.section').classList.add('cart-section');
   }
