@@ -333,17 +333,9 @@ function enableFooterSignUp(form) {
     // disable form and show loading button
     toggleForm(form);
     const entries = Object.fromEntries(data.entries());
-    const { email, mobile, optIn } = entries;
-    const country = window.location.pathname.split('/')[1];
-    let leadSource = optIn ? `sub-emsms-footer-${country}` : `sub-em-footer-${country}`;
-    if (form.closest('dialog')) {
-      leadSource = optIn ? `sub-emsms-modal-${country}` : `sub-em-modal-${country}`;
-    }
+    const { email } = entries;
     const payload = {
       email,
-      mobile,
-      sms_optin: optIn ? '1' : '0',
-      lead_source: leadSource,
       pageUrl: window.location.href,
     };
     const params = new URLSearchParams(payload);
