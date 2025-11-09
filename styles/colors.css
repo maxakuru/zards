@@ -38,6 +38,7 @@
   /* overlays */;
   --overlay-light: rgba(255 255 255 / 95%);
   --overlay-lighter: rgba(255 255 255 / 50%);
+  --overlay-charcoal-light: rgba(51 63 72 / 15%);
   --overlay-charcoal: rgba(51 63 72 / 35%);
   --overlay-charcoal-dark: rgba(51 63 72 / 60%);
 }

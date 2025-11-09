@@ -28,7 +28,7 @@ main > .hero-container.section {
   content: '';
   position: absolute;
   inset: 0;
-  background-color: var(--overlay-charcoal);
+  background-color: var(--overlay-charcoal-light);
   z-index: -1;
   pointer-events: none;
 }
