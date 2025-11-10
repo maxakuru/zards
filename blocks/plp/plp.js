@@ -32,7 +32,6 @@ export async function lookupProducts(config, facets = {}) {
     });
 
     const populateIndex = async (data) => {
-      console.log("data", data);
       const topLevelProducts = data.filter(
         (row) =>
           !row.parentSku &&
@@ -236,9 +235,8 @@ function createProductColors(product) {
 function createProductButton(product, ph, label, btnClass) {
   const button = document.createElement("p");
   button.classList.add(`plp-${toClassName(label)}`, "button-container");
-  button.innerHTML = `<a href="#" class="button ${btnClass}">${
-    ph[toCamelCase(label)] || label
-  }</a>`;
+  button.innerHTML = `<a href="#" class="button ${btnClass}">${ph[toCamelCase(label)] || label
+    }</a>`;
   button.querySelector("a").addEventListener("click", async (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -307,9 +305,6 @@ function createProductSlide(product, ph) {
   const colors = createProductColors(product);
   slideBody.appendChild(colors);
 
-  // feature highlight
-  // recipe programs
-
   // starting at price
   if (product.price) {
     const startingAt = document.createElement("p");
@@ -329,32 +324,25 @@ function createProductSlide(product, ph) {
 
 function buildFiltering(block, ph, config) {
   block.innerHTML = `<div class="plp-controls">
-        <input id="fulltext" placeholder="${
-          ph.typeToSearch || "Type to search"
-        }">
-        <p class="plp-results-count"><span id="plp-results-count"></span> ${
-          ph.results || "Results"
-        }</p>
-        <button class="plp-filter-button secondary">${
-          ph.filter || "Filter"
-        }</button>
+        <input id="fulltext" placeholder="${ph.typeToSearch || "Type to search"
+    }">
+        <p class="plp-results-count"><span id="plp-results-count"></span> ${ph.results || "Results"
+    }</p>
+        <button class="plp-filter-button secondary">${ph.filter || "Filter"
+    }</button>
         <button class="plp-sort-button secondary">${ph.sort || "Sort"}</button>
       </div>
       <div class="plp-facets"></div>
       <div class="plp-sortby">
-        <p>${
-          ph.sortBy || "Sort By"
-        } <span data-sort="featured" id="plp-sortby">${
-    ph.featured || "Featured"
-  }</span></p>
+        <p>${ph.sortBy || "Sort By"
+    } <span data-sort="featured" id="plp-sortby">${ph.featured || "Featured"
+    }</span></p>
         <ul>
           <li data-sort="featured">${ph.featured || "Featured"}</li>
-          <li data-sort="price-desc">${
-            ph.priceHighToLow || "Price High to Low"
-          }</li>
-          <li data-sort="price-asc">${
-            ph.priceLowToHigh || "Price Low to High"
-          }</li>
+          <li data-sort="price-desc">${ph.priceHighToLow || "Price High to Low"
+    }</li>
+          <li data-sort="price-asc">${ph.priceLowToHigh || "Price Low to High"
+    }</li>
           <li data-sort="name">${ph.productName || "Product Name"}</li>
         </ul>
       </div>
@@ -412,7 +400,7 @@ function buildFiltering(block, ph, config) {
             offset
           )}<span class="highlight">${content.substring(
             offset,
-            fulltext.length
+            offset + fulltext.length
           )}</span>${content.substring(offset + fulltext.length)}`;
         }
       });
@@ -449,9 +437,8 @@ function buildFiltering(block, ph, config) {
           <div class="plp-filters">
             <h2>${ph.filters || "Filters"}</h2>
             <div class="plp-filters-selected"></div>
-            <p><button class="plp-filters-clear secondary">${
-              ph.clearAll || "Clear All"
-            }</button></p>
+            <p><button class="plp-filters-clear secondary">${ph.clearAll || "Clear All"
+      }</button></p>
             <div class="plp-filters-facetlist"></div>
           </div>
           <div class="plp-apply-filters">
